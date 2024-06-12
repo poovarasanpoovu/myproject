@@ -1,0 +1,275 @@
+use myprojectdb;
+
+show tables;
+
+drop table student;
+
+create table employee(
+eid int primary key,
+ename varchar(20),
+edsgn varchar(20),
+esalary int
+
+);
+
+insert into employee values
+(1,"Tom","Manager",50000),
+(2,"Jerry","Associate",30000),
+(3,"Wick","TL",40000),
+(4,"John","Manager",60000),
+(5,"Anderson","Associate",35000),
+(6,"Santro","TL",45000),
+(7,"Samson","IT Team",250000),
+(8,"Peter","Manager",70000),
+(9,"Tommy","IT Team",30000),
+(10,"Vin","Associate",36000);
+
+describe employee;
+
+
+select * from employee;
+
+select * from employee where ename="Tom";
+
+select * from employee where ename="Tom" or ename="Vin";
+
+select * from employee where eid=1 and ename="Tom";
+
+select * from employee where edsgn="Manager" and esalary>50000;
+
+select * from employee where eid>=5 and edsgn="It team" and esalary>25000;
+
+select * from employee where esalary between 40000 and 60000;
+
+select * from employee limit 5;
+
+select * from employee limit 5 offset 3;
+
+select * from employee where eid in(1,3) and ename="Tom";
+
+select * from employee where eid not in(1,3);
+
+select * from employee where eid<>1;
+
+select * from employee where ename is not null;
+
+select * from employee where esalary<50000;
+
+insert into employee values(11,"Anbu","TL",40000);
+
+update employee set ename="Edvin" where eid=11;
+
+update employee set ename="John",edsgn="IT Team" where eid=11;
+
+delete from employee where eid=11;
+
+alter table employee add column elocation varchar(20);
+
+update employee set elocation="Mexico" where eid in(7,9);
+
+alter table employee modify elocation varchar(30);
+
+alter table employee rename column elocation to location;
+
+alter table employee rename to emp;
+
+alter table emp rename to employee;
+
+alter table employee drop column location;
+
+select * from employee where ename like 'a%';
+
+select * from employee where ename like '%a%';
+
+select * from employee where ename like 's%n';
+
+select * from employee where ename like 's%n%o';
+
+select * from employee where ename like 'S_n%';
+
+select * from employee where ename like '__m%';
+
+select * from employee where ename like 'j\%';
+
+select * from employee order by ename;
+
+select * from employee order by ename desc;
+
+select * from employee order by esalary,ename;
+
+select * from employee where edsgn="Manager" order by ename;
+
+select * from employee order by(case edsgn
+
+when "Manager" then 1
+when "TL" then 2
+when "Associate" then 3
+else 100 end),ename;
+
+select count(eid) from employee;
+
+select avg(esalary) from employee;
+
+select max(esalary) from employee;
+
+select min(esalary) from employee;
+
+select sum(esalary) from employee;
+
+select ename,char_length(ename) from employee;
+
+select concat("Rs",esalary) from employee;
+
+select ename,concat("rs",format(esalary,0)) from employee;
+
+select ename,ucase(ename) from employee;
+
+select ename,left(ename,2) from employee;
+
+select edsgn,count(eid) emp_count from employee group by edsgn having count(eid)>2;
+
+
+create table employee2(
+eid int primary key,
+ename varchar(20),
+edsgn varchar(20),
+esalary int
+
+);
+
+show tables;
+
+# Copy The Table employee to employee2
+insert into employee2(eid,ename,edsgn,esalary) select * from employee;
+
+select * from employee2;
+
+select current_date();
+
+select current_time();
+
+select date_format(current_date,'%d/%m/%Y');
+
+select datediff(current_date,'2024-06-11');
+
+select date_add(current_date,interval 1 week);
+
+# Add time or date in a Table
+
+alter table employee add column rep_time time;
+
+update employee set rep_time=current_time() where eid in(9,10);
+
+#constrains-(primery key,foreign key,null,check,default,unique,
+
+create table constrainstable(
+cid int primary key auto_increment,
+cname varchar(20) not null,
+cdept varchar(20) default 'un-assigned',
+cpan varchar(20) unique);
+
+show index from constrainstable;
+
+insert into constrainstable(cname,cdept,cpan) values("Arjun","CT","232PAN45");
+
+select * from constrainstable;
+
+insert into constrainstable(cdept,cpan) values("CT","232PAN48"); # table will error like cname doesn't have default value 
+
+insert into constrainstable(cname,cpan) values("Arjun","234PAN46"); # table result col cdept is un-assigned
+
+insert into constrainstable(cname,cdept,cpan) values("Mani","IT","232PAN45"); # table will serror like PAN is no duplicate
+
+#How to remove contrains after declared
+
+alter table constrainstable modify cname varchar(20); # Modify the column contrains
+
+alter table constrainstable alter cdept drop default; # Drop Default value
+
+alter table constrainstable add column csalary int;
+
+alter table constrainstable add constraint c_k check(csalary>20000);
+
+update constrainstable set csalary=10000 where cid in(1,2);
+
+update constrainstable set csalary=20000 where cid=2; # check contrains error show enter more than 20000
+
+alter table constrainstable drop check c_k;
+
+#Foreign Key
+
+create table branch(
+bid int primary key,
+bname varchar(20),
+baddress varchar(30));
+
+
+create table emp(
+eid int primary key,
+ename varchar(30),
+edsgn varchar(20),
+esalary int,
+bid int,
+constraint f_k foreign key(bid) references branch(bid)
+on delete set null); # we try to delete bid values not possible t delete so we create on delete cascade or set nul
+#Cascade--> delete entire row and set null-->delete value and set value is null bid only deleted in bid column
+
+
+insert into branch values
+(1,"Coimbatore","Cross cut"),
+(2,"Chennai","T.nager"),
+(3,"Madurai","North Madurai"),
+(4,"Bangalore","E-City");
+
+
+insert into emp values
+(1,"Tom","Manger",40000,1),
+(2,"Jerry","TL",30000,3),
+(3,"Wick","Manger",60000,2),
+(4,"John","TL",25000,1),
+(5,"Parker","Manger",65000,3);
+
+
+ 
+drop table emp;
+drop table branch;
+
+delete from branch where bid=2;
+
+select * from emp; 
+select * from branch;
+
+#Inner,Left,Right joins in a table
+
+select eid,ename,bname from emp  as e inner join branch as b on e.bid=b.bid;
+
+select eid,ename,bname from emp as e left join branch as b on e.bid=b.bid;
+
+select eid,ename,bname from emp  as e right join branch as b on e.bid=b.bid;
+
+select eid,ename,bname from emp cross join branch;
+
+select e.eid,e.ename,b.bname from emp as e,branch as b where e.bid=b.bid;
+
+select bname,count(eid) from branch as b join emp as e on e.bid=b.bid group by e.bid;
+
+select * from emp where bid=(select bid from branch where bname="coimbatore"); #Subquery
+
+select bid,bname from branch as b where exists(select * from emp as e where edsgn="TL" and e.bid=b.bid);
+
+select * from branch where bid=any(select bid from emp where esalary>30000 and ename="Tom");
+
+select * from emp where bid<>all(select bid from branch where bname in("Coimbatore","Chennai")); 
+
+create or replace view new_view as
+select e.eid,e.ename,b.bname from emp as e inner join branch as b on e.bid=b.bid;
+
+select * from new_view order by ename;
+
+show index from emp;
+
+create index new_index on emp(ename);
+
+alter table emp drop index new_index;
+
+alter table emp add index(ename);
